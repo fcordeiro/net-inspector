@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+artifacts/
+*.netinspect
+*.tmp
+test-results/
+.vs/

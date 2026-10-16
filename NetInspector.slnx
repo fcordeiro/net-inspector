@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NetInspector.Core/NetInspector.Core.csproj" />
+    <Project Path="src/NetInspector.Desktop/NetInspector.Desktop.csproj" />
+    <Project Path="src/NetInspector.Collector/NetInspector.Collector.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NetInspector.Tests/NetInspector.Tests.csproj" />
+    <Project Path="tests/NetInspector.UITests/NetInspector.UITests.csproj" />
+  </Folder>
+</Solution>

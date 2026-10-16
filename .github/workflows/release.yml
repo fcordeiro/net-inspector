@@ -1,0 +1,49 @@
+name: Validate and release
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Compile
+        run: dotnet build NetInspector.slnx -c Release
+      - name: Core checks
+        run: dotnet run --project tests/NetInspector.Tests -c Release --no-build
+      - name: UI and PDF checks
+        run: dotnet run --project tests/NetInspector.UITests -c Release --no-build
+      - name: Publish portable executable
+        run: ./scripts/publish.ps1 -OutputDirectory artifacts/release
+      - name: Package release
+        shell: pwsh
+        run: |
+          Copy-Item artifacts/release/NetInspector.exe artifacts/NetInspector-win-x64.exe
+          $hash = (Get-FileHash artifacts/NetInspector-win-x64.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  NetInspector-win-x64.exe" | Set-Content artifacts/SHA256SUMS.txt -Encoding ascii
+          if ($env:GITHUB_REF_TYPE -eq 'tag') {
+            [xml]$props = Get-Content Directory.Build.props
+            if ($env:GITHUB_REF_NAME -ne "v$($props.Project.PropertyGroup.Version)") { throw 'Tag and application version differ' }
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NetInspector-win-x64
+          path: |
+            artifacts/NetInspector-win-x64.exe
+            artifacts/SHA256SUMS.txt
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh release create "$env:GITHUB_REF_NAME" artifacts/NetInspector-win-x64.exe artifacts/SHA256SUMS.txt THIRD-PARTY-NOTICES.txt --verify-tag --title "Net Inspector $env:GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md
