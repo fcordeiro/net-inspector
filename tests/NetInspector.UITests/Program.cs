@@ -10,6 +10,8 @@ internal static class Program
         catch (IOException) { wifiOutput = "Wi-Fi indisponível neste Windows."; }
         ApplicationConfiguration.Initialize(); Theme.Initialize();
         Directory.CreateDirectory("test-results");
+        if (args.Contains("--live-refresh")) { LiveRefreshChecks.Run(); return; }
+        LiveRefreshChecks.Run();
         if (args.Contains("--long-session")) { ReleaseUiChecks.LongSession(); return; }
         ReleaseUiChecks.Run();
         VerifyTools();

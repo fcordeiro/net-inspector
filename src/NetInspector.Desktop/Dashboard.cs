@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Xml.Linq;
-using System.Runtime.InteropServices;
 using NetInspector.Core;
 
 namespace NetInspector.Desktop;
@@ -182,26 +181,26 @@ public sealed class Dashboard : UserControl
         download.Points = s.Speeds.Where(p => p.Direction == "download").Select(p => (p.At, p.Mbps)).ToArray();
         upload.Points = s.Speeds.Where(p => p.Direction == "upload").Select(p => (p.At, p.Mbps)).ToArray();
         foreach (var plot in new[] { latency, jitter, download, upload }) plot.Invalidate();
-        if (stats.Visible) stats.DataSource = s.Pings.GroupBy(p => new { p.Target, p.UnderLoad }).Select(g => { var p = Diagnosis.Stats(g.Key.Target, g); return new { Status = p.Samples < 10 ? "? Poucas amostras" : p.Received == 0 ? "? Sem resposta" : g.Key.UnderLoad ? "Durante teste de velocidade" : p.LossPercent >= 2 || p.JitterMs > 20 || p.AverageMs > 100 ? "✕ Atenção" : "✓ OK", Destino = p.Target, DuranteVelocidade = g.Key.UnderLoad ? "Sim" : "Não", Tentativas = p.Samples, Respostas = p.Received, PerdaPct = F(p.LossPercent), LatenciaMediaMs = F(p.AverageMs), LatenciaP95Ms = F(p.P95Ms), JitterMedioMs = F(p.JitterMs), Interpretacao = (p.Samples < 10 ? $"Apenas {p.Samples} de pelo menos 10 amostras necessárias para aplicar os critérios de qualidade. Aguarde a coleta continuar ou faça um teste mais longo. " : p.Received == 0 ? "Nenhuma resposta ICMP. O destino pode bloquear ping; isso não comprova queda da conexão. " : "As métricas descrevem apenas este destino e período. ") + (g.Key.UnderLoad ? "Amostras durante download/upload: a transferência pode elevar latência e jitter. Compare com as linhas sem carga; estas amostras não recebem o mesmo veredito das medições em repouso." : "Amostras sem teste de velocidade simultâneo. Critérios de atenção: perda parcial ≥2%, latência média >100ms ou jitter >20ms.") }; }).ToArray();
-        if (services.Visible) services.DataSource = s.Services.OrderByDescending(p => p.At).Select(p => new { Status = p.Outcome == "reachable" ? "✓ OK" : p.Outcome == "restricted" ? "? Restrito" : "✕ Falha", Horario = When(p.At), Servico = p.Name, Categoria = p.Category, DNSms = F(p.DnsMs), TCPms = F(p.TcpMs), HTTPSms = F(p.HttpsMs), HTTP = p.HttpStatus?.ToString() ?? "Sem resposta", Resultado = ServiceOutcome(p.Outcome), Detalhe = p.Error }).ToArray();
-        if (pings.Visible) pings.DataSource = s.Pings.OrderByDescending(p => p.At).Select(p => new { Status = p.Success ? "✓ Respondeu" : "? Sem resposta", Horario = When(p.At), Destino = p.Target, IP = p.Address, Resultado = p.Success ? "Respondeu" : "Sem resposta", LatenciaMs = F(p.Ms), DuranteVelocidade = p.UnderLoad ? "Sim" : "Não", Detalhe = p.Status }).ToArray();
-        if (speeds.Visible) speeds.DataSource = s.Speeds.Select(p => new { Status = p.Mbps.HasValue ? "✓ Medido" : "? Não medido", Horario = When(p.At), Direcao = p.Direction == "download" ? "Download" : "Upload", VelocidadeMbps = F(p.Mbps), DadosMB = (p.Bytes / 1_000_000.0).ToString("F2"), DuracaoSegundos = p.Seconds.ToString("F2"), Conexoes = p.Streams, Resultado = p.Error ?? "Medição concluída" }).ToArray();
+        if (stats.Visible) StableView.SetRows(stats, s.Pings.GroupBy(p => new { p.Target, p.UnderLoad }).Select(g => { var p = Diagnosis.Stats(g.Key.Target, g); return new { Status = p.Samples < 10 ? "? Poucas amostras" : p.Received == 0 ? "? Sem resposta" : g.Key.UnderLoad ? "Durante teste de velocidade" : p.LossPercent >= 2 || p.JitterMs > 20 || p.AverageMs > 100 ? "✕ Atenção" : "✓ OK", Destino = p.Target, DuranteVelocidade = g.Key.UnderLoad ? "Sim" : "Não", Tentativas = p.Samples, Respostas = p.Received, PerdaPct = F(p.LossPercent), LatenciaMediaMs = F(p.AverageMs), LatenciaP95Ms = F(p.P95Ms), JitterMedioMs = F(p.JitterMs), Interpretacao = (p.Samples < 10 ? $"Apenas {p.Samples} de pelo menos 10 amostras necessárias para aplicar os critérios de qualidade. Aguarde a coleta continuar ou faça um teste mais longo. " : p.Received == 0 ? "Nenhuma resposta ICMP. O destino pode bloquear ping; isso não comprova queda da conexão. " : "As métricas descrevem apenas este destino e período. ") + (g.Key.UnderLoad ? "Amostras durante download/upload: a transferência pode elevar latência e jitter. Compare com as linhas sem carga; estas amostras não recebem o mesmo veredito das medições em repouso." : "Amostras sem teste de velocidade simultâneo. Critérios de atenção: perda parcial ≥2%, latência média >100ms ou jitter >20ms.") }; }).ToArray());
+        if (services.Visible) StableView.SetRows(services, s.Services.OrderByDescending(p => p.At).Select(p => new { Status = p.Outcome == "reachable" ? "✓ OK" : p.Outcome == "restricted" ? "? Restrito" : "✕ Falha", Horario = When(p.At), Servico = p.Name, Categoria = p.Category, DNSms = F(p.DnsMs), TCPms = F(p.TcpMs), HTTPSms = F(p.HttpsMs), HTTP = p.HttpStatus?.ToString() ?? "Sem resposta", Resultado = ServiceOutcome(p.Outcome), Detalhe = p.Error }).ToArray());
+        if (pings.Visible) StableView.SetRows(pings, s.Pings.OrderByDescending(p => p.At).Select(p => new { Status = p.Success ? "✓ Respondeu" : "? Sem resposta", Horario = When(p.At), Destino = p.Target, IP = p.Address, Resultado = p.Success ? "Respondeu" : "Sem resposta", LatenciaMs = F(p.Ms), DuranteVelocidade = p.UnderLoad ? "Sim" : "Não", Detalhe = p.Status }).ToArray());
+        if (speeds.Visible) StableView.SetRows(speeds, s.Speeds.Select(p => new { Status = p.Mbps.HasValue ? "✓ Medido" : "? Não medido", Horario = When(p.At), Direcao = p.Direction == "download" ? "Download" : "Upload", VelocidadeMbps = F(p.Mbps), DadosMB = (p.Bytes / 1_000_000.0).ToString("F2"), DuracaoSegundos = p.Seconds.ToString("F2"), Conexoes = p.Streams, Resultado = p.Error ?? "Medição concluída" }).ToArray());
         connectionInfo.Text = $"{TypeName(adapter?.Type ?? "Não identificada")}  •  {adapter?.Name ?? "Sem rota principal identificada"}\r\n{(s.Network.Any(n => n.IsPrimary.HasValue) ? "Interface da rota IPv4 para as sondagens (1.1.1.1), verificada a cada 10 s. VPN pode alterar a rota." : "Relatório antigo: interface da rota inicial. Trocas de rede não foram registradas.")}";
-        if (network.Visible) network.DataSource = s.Network.Where(p => showAllHistory.Checked || p.IsPrimary == true || (p.IsPrimary == null && adapter != null && p.Adapter == adapter.Name)).OrderByDescending(p => p.At).Select(p => new { Uso = p.IsPrimary == true ? "✓ Rota das sondagens" : p.IsPrimary == false ? "Secundário" : "Rota inicial (legado)", Horario = When(p.At), Adaptador = p.Adapter, Tipo = TypeName(p.Type), Estado = NetworkState(p.Status), LinkMbps = LinkSpeed(p.LinkBps), RecebidosMB = (p.ReceivedBytes / 1_000_000.0).ToString("F1"), EnviadosMB = (p.SentBytes / 1_000_000.0).ToString("F1"), ErrosRecepcao = p.ReceiveErrors, ErrosEnvio = p.SendErrors }).ToArray();
+        if (network.Visible) StableView.SetRows(network, s.Network.Where(p => showAllHistory.Checked || p.IsPrimary == true || (p.IsPrimary == null && adapter != null && p.Adapter == adapter.Name)).OrderByDescending(p => p.At).Select(p => new { Uso = p.IsPrimary == true ? "✓ Rota das sondagens" : p.IsPrimary == false ? "Secundário" : "Rota inicial (legado)", Horario = When(p.At), Adaptador = p.Adapter, Tipo = TypeName(p.Type), Estado = NetworkState(p.Status), LinkMbps = LinkSpeed(p.LinkBps), RecebidosMB = (p.ReceivedBytes / 1_000_000.0).ToString("F1"), EnviadosMB = (p.SentBytes / 1_000_000.0).ToString("F1"), ErrosRecepcao = p.ReceiveErrors, ErrosEnvio = p.SendErrors }).ToArray());
         if (adapters.Visible)
         {
             machineInfo.Text = $"Conexão principal no início: {TypeName(adapter?.Type ?? "Não identificada")} • {adapter?.Name ?? "Sem rota identificada"}\r\nSistema: {s.Machine.Os}\r\nNavegador padrão para HTTPS: {BrowserName(s.Machine.DefaultBrowser)}\r\nGateway inicial: {s.Machine.Gateway ?? "Não identificado"}\r\n{string.Join(" | ", s.Machine.Limitations)}";
-            adapters.DataSource = s.Machine.Adapters.Where(a => showAllAdapters.Checked || a.Id == s.Machine.PrimaryAdapterId).OrderByDescending(a => a.Id == s.Machine.PrimaryAdapterId).Select(a => new { Adaptador = a.Name, ConexaoPrincipal = a.Id == s.Machine.PrimaryAdapterId ? "Sim" : "Não", Tipo = TypeName(a.Type), Estado = NetworkState(a.Status), LinkMbps = LinkSpeed(a.LinkBps), EnderecosIP = string.Join(", ", a.Addresses), Gateway = string.Join(", ", a.Gateways), DNS = string.Join(", ", a.Dns) }).ToArray();
+            StableView.SetRows(adapters, s.Machine.Adapters.Where(a => showAllAdapters.Checked || a.Id == s.Machine.PrimaryAdapterId).OrderByDescending(a => a.Id == s.Machine.PrimaryAdapterId).Select(a => new { Adaptador = a.Name, ConexaoPrincipal = a.Id == s.Machine.PrimaryAdapterId ? "Sim" : "Não", Tipo = TypeName(a.Type), Estado = NetworkState(a.Status), LinkMbps = LinkSpeed(a.LinkBps), EnderecosIP = string.Join(", ", a.Addresses), Gateway = string.Join(", ", a.Gateways), DNS = string.Join(", ", a.Dns) }).ToArray());
         }
-        if (extensions.Visible) extensions.DataSource = s.Machine.Extensions.Select(e => new { Navegador = e.Browser, Perfil = e.Profile, Extensao = e.Name.StartsWith("__MSG_") ? "Nome localizado indisponível; ID: " + e.Id : e.Name, Versao = e.Version, Estado = e.State, Identificador = e.Id }).ToArray();
-        if (events.Visible) events.DataSource = s.Events.Select(e => new { Horario = When(e.At), Tipo = e.Level switch { "error" => "Erro", "warning" => "Aviso", _ => "Informação" }, Mensagem = e.Message }).ToArray();
+        if (extensions.Visible) StableView.SetRows(extensions, s.Machine.Extensions.Select(e => new { Navegador = e.Browser, Perfil = e.Profile, Extensao = e.Name.StartsWith("__MSG_") ? "Nome localizado indisponível; ID: " + e.Id : e.Name, Versao = e.Version, Estado = e.State, Identificador = e.Id }).ToArray());
+        if (events.Visible) StableView.SetRows(events, s.Events.Select(e => new { Horario = When(e.At), Tipo = e.Level switch { "error" => "Erro", "warning" => "Aviso", _ => "Informação" }, Mensagem = e.Message }).ToArray());
         if (networkSettings.Visible) RenderSettings(s);
         if (providers.Visible)
         {
-            providers.DataSource = s.ProviderStatus.OrderByDescending(p => p.At).Select(p => new { Status = p.State == "operational" ? "✓ Sem incidentes" : p.State == "degraded" ? "✕ Incidente" : "? Consultar", Servico = p.Provider, ConsultadoEm = When(p.At), Situacao = p.State switch { "operational" => "Sem incidentes publicados", "degraded" => "Incidente / degradação publicada", "manual" => "Consultar página oficial", _ => "Consulta indisponível" }, Descricao = p.Summary, ComponentesAfetados = string.Join("; ", p.Components), Incidentes = string.Join("; ", p.Incidents), AtualizacaoDaFonte = p.UpdatedAt.HasValue ? When(p.UpdatedAt.Value) : "Não informada" }).ToArray();
+            StableView.SetRows(providers, s.ProviderStatus.OrderByDescending(p => p.At).Select(p => new { Status = p.State == "operational" ? "✓ Sem incidentes" : p.State == "degraded" ? "✕ Incidente" : "? Consultar", Servico = p.Provider, ConsultadoEm = When(p.At), Situacao = p.State switch { "operational" => "Sem incidentes publicados", "degraded" => "Incidente / degradação publicada", "manual" => "Consultar página oficial", _ => "Consulta indisponível" }, Descricao = p.Summary, ComponentesAfetados = string.Join("; ", p.Components), Incidentes = string.Join("; ", p.Incidents), AtualizacaoDaFonte = p.UpdatedAt.HasValue ? When(p.UpdatedAt.Value) : "Não informada" }).ToArray());
 
         }
-        if (gameServers.Visible) gameServers.DataSource = s.GameServers.OrderByDescending(p => p.At).Select(p => new { Status = p.Success ? "✓ Respondeu" : "? Sem confirmação", Horario = When(p.At), Servidor = p.Name, Destino = p.Host + ":" + p.Port, Protocolo = p.Protocol, Resultado = p.Success ? "Resposta válida" : "Falha / inconclusivo", LatenciaMs = F(p.Ms), Informacoes = p.Details, Detalhe = p.Error }).ToArray();
+        if (gameServers.Visible) StableView.SetRows(gameServers, s.GameServers.OrderByDescending(p => p.At).Select(p => new { Status = p.Success ? "✓ Respondeu" : "? Sem confirmação", Horario = When(p.At), Servidor = p.Name, Destino = p.Host + ":" + p.Port, Protocolo = p.Protocol, Resultado = p.Success ? "Resposta válida" : "Falha / inconclusivo", LatenciaMs = F(p.Ms), Informacoes = p.Details, Detalhe = p.Error }).ToArray());
         if (windowsLogs != null)
         {
             logs = windowsLogs; logChoice.Items.Clear(); logChoice.Items.AddRange(logs.Keys.Select(k => (object)new LogItem(k)).ToArray());
@@ -211,17 +210,17 @@ public sealed class Dashboard : UserControl
     }
     private void RenderSettings(Session session)
     {
-        networkSettings.Clear(); networkSettings.WordWrap = false;
+        using var document = new RichTextBox { Font = networkSettings.Font, WordWrap = false };
         using var title = new Font("Segoe UI", 15, FontStyle.Bold);
         using var heading = new Font("Segoe UI", 11, FontStyle.Bold);
         using var body = new Font("Consolas", 10);
         void Add(string text, Font font, Color color)
         {
-            var start = networkSettings.TextLength;
-            networkSettings.AppendText(text);
-            networkSettings.Select(start, networkSettings.TextLength - start);
-            networkSettings.SelectionFont = font; networkSettings.SelectionColor = color;
-            networkSettings.Select(networkSettings.TextLength, 0);
+            var start = document.TextLength;
+            document.AppendText(text);
+            document.Select(start, document.TextLength - start);
+            document.SelectionFont = font; document.SelectionColor = color;
+            document.Select(document.TextLength, 0);
         }
         Add("Wi-Fi e configurações\n", title, Theme.Text);
         Add("Dados registrados no início do teste. Use estas informações com o suporte.\nNenhuma configuração foi alterada. Acentos de relatórios antigos dependem da captura original.\n\n", heading, Theme.Muted);
@@ -230,22 +229,19 @@ public sealed class Dashboard : UserControl
             Add((detail.Key switch { "wifi" => "01  /  CONEXÃO WI-FI", "proxyWinHttp" => "02  /  PROXY DO WINDOWS", "tcp" => "03  /  CONFIGURAÇÕES TCP", _ => detail.Key }) + "\n\n", heading, Theme.Orange);
             Add(WindowsSettingsText.Align(detail.Value) + "\n\n", body, Theme.Text);
         }
-        networkSettings.Select(0, 0); networkSettings.ScrollToCaret();
+        StableView.SetDocument(networkSettings, document.Rtf);
     }
     private void RenderDiagnosis(Session s)
     {
-        var scroll = new Point();
-        if (findings.IsHandleCreated) SendMessage(findings.Handle, 0x4DD, IntPtr.Zero, ref scroll);
-        var selection = findings.SelectionStart;
-        findings.Clear();
+        using var document = new RichTextBox { Font = findings.Font };
         using var title = new Font("Segoe UI", 18, FontStyle.Bold);
         using var heading = new Font("Segoe UI", 12, FontStyle.Bold);
         using var body = new Font("Segoe UI", 11);
         using var bold = new Font("Segoe UI", 11, FontStyle.Bold);
         void Add(string text, Font font, Color color)
         {
-            findings.SelectionStart = findings.TextLength; findings.SelectionLength = 0;
-            findings.SelectionFont = font; findings.SelectionColor = color; findings.AppendText(text);
+            document.SelectionStart = document.TextLength; document.SelectionLength = 0;
+            document.SelectionFont = font; document.SelectionColor = color; document.AppendText(text);
         }
         var list = Diagnosis.Analyze(s).OrderBy(f => f.Severity switch { "Atenção" => 0, "Inconclusivo" => 1, _ => 2 }).ToArray();
         var alerts = list.Count(f => f.Severity == "Atenção");
@@ -271,11 +267,8 @@ public sealed class Dashboard : UserControl
         }
         Add("COMO INTERPRETAR\n", heading, Theme.Navy);
         Add("Status dos jogos vem das fontes indicadas e pode ter atraso. A resposta de um servidor específico não representa todos os servidores do jogo. Eventos Windows precisam de correlação de horário; não provam causalidade. Nenhuma conclusão atribui automaticamente a falha ao provedor.\n", body, Theme.Muted);
-        findings.Select(Math.Min(selection, findings.TextLength), 0);
-        if (findings.IsHandleCreated) SendMessage(findings.Handle, 0x4DE, IntPtr.Zero, ref scroll);
+        StableView.SetDocument(findings, document.Rtf);
     }
-    [DllImport("user32.dll", EntryPoint = "SendMessageW")]
-    private static extern IntPtr SendMessage(IntPtr handle, int message, IntPtr wParam, ref Point point);
     private sealed record LogItem(string Key)
     {
         public override string ToString() => Key.Replace("windows/", "").Replace(".xml", "").Replace(".error.txt", " — indisponível").Replace("Microsoft-Windows-", "").Replace("_Operational", "");

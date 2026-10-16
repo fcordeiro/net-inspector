@@ -131,3 +131,10 @@ Ainda requer homologação de troca física Wi-Fi/cabo durante a coleta, DPI var
 - Atualizador consulta somente a última release pública estável do repositório oficial, exige versão válida e ativo compatível, ignora prereleases e bloqueia URL de outra origem. Consulta ao iniciar é configurável e não interrompe testes. Verificação manual exibe falhas de rede/limite; download abre a release no navegador. Não há substituição automática do EXE.
 - GitHub Actions valida build/testes e gera EXE único e SHA-256; tags com versão correspondente publicam GitHub Releases. Licenças de bibliotecas ficam no repositório, incorporadas no EXE e acessíveis em Ajuda.
 - Não foram executadas limpezas de dados reais, instalações, TRIM, sobrescrita ou elevação UAC. Execução real de duas horas, Windows limpo, HDD físico, DPI variados e Windows ARM64 permanecem para homologação.
+
+## Correção de atualização das telas durante a coleta (16/10/2026)
+
+- Diagnóstico e configurações são formatados fora do controle visível e aplicados de uma vez, com repintura suspensa e restauração da seleção e das posições horizontal/vertical. Documentos idênticos não são reaplicados.
+- Tabelas visíveis evitam nova vinculação quando os valores não mudaram; atualizações preservam a seleção e o registro em leitura nas listas com novas amostras no topo. A lista no início continua mostrando as amostras mais recentes.
+- Teste `--live-refresh`: documentos longos com a janela ativa e inativa, seleção de texto, rolagem vertical/horizontal, conteúdo idêntico e dados novos; tabela de pings com inserção no topo. Verificação por estado dos controles nativos, sem avaliação visual contínua de uma coleta real.
+- Build Release sem avisos/erros; 87 verificações do núcleo e suíte de interface existente passaram. EXE local em `artifacts/win-x64-refresh-fix/NetInspector.exe`; sem criação de release no GitHub.
