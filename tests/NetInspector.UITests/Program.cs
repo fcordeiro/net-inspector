@@ -54,6 +54,21 @@ internal static class Program
     {
         foreach (Control child in root.Controls) { yield return child; foreach (var descendant in All(child)) yield return descendant; }
     }
+    private static void VerifyFlowRows(FlowLayoutPanel panel, string name)
+    {
+        var row = new List<Control>();
+        void VerifyRow()
+        {
+            var centers = row.Select(c => c.Top + c.Height / 2).ToArray();
+            if (centers.Length > 0 && centers.Max() - centers.Min() > 1) throw new Exception("Controles desalinhados: " + name);
+        }
+        foreach (Control control in panel.Controls)
+        {
+            if (row.Count > 0 && control.Left <= row[^1].Left) { VerifyRow(); row.Clear(); }
+            row.Add(control);
+        }
+        VerifyRow();
+    }
     private static void Verify(Form form, string name, bool waitForData)
     {
         form.ShowInTaskbar = false;
@@ -78,13 +93,13 @@ internal static class Program
                 if (waitForData && !All(form).OfType<RichTextBox>().Any(r => r.Text.Contains("PRINCIPAIS MEDIÇÕES") && r.Rtf?.Contains("colortbl") == true)) throw new Exception("Diagnóstico formatado ausente");
                 if (!All(form).OfType<Button>().Any(b => b.Text.Contains("Iniciar") && b.Height >= 42 && b.Font.Bold)) throw new Exception("Botão iniciar sem destaque");
                 var actions = All(form).OfType<Button>().Where(b => b.Parent is FlowLayoutPanel).ToArray();
-                if (actions.Length != 5 || actions.Select(b => b.Size).Distinct().Count() != 1 || actions.Select(b => b.Top).Distinct().Count() != 1) throw new Exception("Ações desalinhadas ou com tamanhos diferentes");
+                if (actions.Length != 5 || actions.Select(b => b.Size).Distinct().Count() != 1 || actions.Any(b => b.Right > b.Parent!.ClientSize.Width)) throw new Exception("Ações cortadas ou com tamanhos diferentes");
+                VerifyFlowRows((FlowLayoutPanel)actions[0].Parent!, "Ações principais");
                 var speed = All(form).OfType<ThemeCheckBox>().Single(c => c.Text.Contains("Medir velocidade"));
                 if (speed.Width < speed.GetPreferredSize(Size.Empty).Width) throw new Exception("Texto da opção de velocidade sem espaço suficiente");
                 var nextSetting = speed.Parent!.Controls.Cast<Control>().First(c => c.Left >= speed.Right && c != speed);
                 if (speed.Bounds.IntersectsWith(nextSetting.Bounds)) throw new Exception("Opções de coleta sobrepostas");
-                var settingsCenters = speed.Parent.Controls.Cast<Control>().Select(c => c.Top + c.Height / 2).ToArray();
-                if (settingsCenters.Max() - settingsCenters.Min() > 1) throw new Exception("Linha Duração desalinhada verticalmente");
+                VerifyFlowRows((FlowLayoutPanel)speed.Parent, "Duração");
                 var duration = All(form).OfType<DurationPicker>().Single();
                 if (duration.Value != TestPolicy.DefaultMinutes || duration.Maximum != TestPolicy.MaximumMinutes) throw new Exception("Duração padrão/máxima incorreta");
                 if (!menu.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "Arquivo").DropDownItems.OfType<ToolStripMenuItem>().Any(i => i.Text!.Contains("PDF"))) throw new Exception("Exportação PDF ausente");
