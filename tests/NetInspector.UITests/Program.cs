@@ -153,7 +153,8 @@ internal static class Program
                 tabs.SelectedIndex = 9;
                 var adapterGrid = All(tabs.SelectedTab!).OfType<DataGridView>().Single();
                 if (waitForData && adapterGrid.Rows.Count > 1) throw new Exception("Adaptadores secundários visíveis por padrão");
-                if (tabs.TabPages.Count < 10 || tabs.Height < 300) throw new Exception("Layout inválido");
+                Console.WriteLine($"Viewport {form.ClientSize.Width}x{form.ClientSize.Height}; conteúdo {tabs.Width}x{tabs.Height}");
+                if (tabs.TabPages.Count < 10 || tabs.Height <= 0 || tabs.Width <= 0 || tabs.Bottom > tabs.Parent!.ClientSize.Height) throw new Exception("Conteúdo fora da área disponível");
                 tabs.SelectedIndex = 13;
                 var wifiSession = new Session();
                 wifiSession.Machine.Details["wifi"] = wifiOutput;

@@ -24,6 +24,12 @@ jobs:
         run: dotnet run --project tests/NetInspector.UITests -c Release --no-build
       - name: Publish portable executable
         run: ./scripts/publish.ps1 -OutputDirectory artifacts/release
+      - name: Preserve UI diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: UI-diagnostics
+          path: test-results/*.png
       - name: Package release
         shell: pwsh
         run: |
