@@ -98,6 +98,13 @@ Ainda requer homologação de troca física Wi-Fi/cabo durante a coleta, DPI var
 - Diagnóstico TXT usa a mesma lista de achados que contém o resumo de recursos. Relatórios antigos continuam legíveis com CPU/memória não medidas.
 - Monitoramento é total do computador, por amostras a cada 2s. A média é aritmética e o pico é o máximo observado; picos entre intervalos podem escapar. O ETA cobre a coleta; a etapa de eventos Windows e gravação informa duração indeterminada.
 - Não foi repetida uma sessão de duas horas nem homologado Windows limpo ou ARM64.
+# 1.5.2 - organização do cabeçalho do PDF (16/10/2026)
+
+- Capa reorganizada com logo proporcional à esquerda, identificação à direita, linha divisória, título em uma linha e subtítulo separado.
+- Identificação repetida da marca removida da capa; cabeçalhos das páginas internas preservados.
+- PDFs com dados e vazio/legado gerados pelo aplicativo e renderizados para revisão visual. Sem mudanças nos dados e anexos do relatório.
+- Testes de interface e geração de PDF passaram.
+
 # 1.5.1 - acentuação do WinGet e mensagens de atualização (16/10/2026)
 
 - Configurada a codificação UTF-8 na passagem de comandos nativos pelo PowerShell, antes da gravação do log. Não há substituição posterior de caracteres corrompidos.

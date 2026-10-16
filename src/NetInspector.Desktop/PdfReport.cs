@@ -21,15 +21,19 @@ public static class PdfReport
         var normal = doc.Styles[StyleNames.Normal]!; normal.Font.Name = "Segoe UI"; normal.Font.Size = 9; normal.Font.Color = Ink; normal.ParagraphFormat.SpaceAfter = 5;
         var heading = doc.Styles[StyleNames.Heading1]!; heading.Font.Name = "Segoe UI"; heading.Font.Size = 22; heading.Font.Color = Blue; heading.ParagraphFormat.SpaceAfter = 14;
         var sub = doc.Styles[StyleNames.Heading2]!; sub.Font.Size = 12; sub.Font.Color = Blue; sub.ParagraphFormat.SpaceBefore = 12; sub.ParagraphFormat.SpaceAfter = 7;
-        Section NewSection(string title)
+        Section NewSection(string? title)
         {
             var section = doc.AddSection(); section.PageSetup.PageFormat = PageFormat.A4;
             section.PageSetup.TopMargin = Unit.FromCentimeter(2); section.PageSetup.BottomMargin = Unit.FromCentimeter(1.8);
             section.PageSetup.LeftMargin = section.PageSetup.RightMargin = Unit.FromCentimeter(1.7);
-            var header = section.Headers.Primary.AddParagraph("CONNECT10   /   NET INSPECTOR"); header.Format.Font.Size = 8; header.Format.Font.Color = Gray;
+            if (title != null)
+            {
+                var header = section.Headers.Primary.AddParagraph("CONNECT10   /   NET INSPECTOR"); header.Format.Font.Size = 8; header.Format.Font.Color = Gray;
+            }
             var footer = section.Footers.Primary.AddParagraph(); footer.Format.Font.Size = 7; footer.Format.Font.Color = Gray;
             footer.AddText(Branding.Copyright + "   |   "); footer.AddPageField(); footer.AddText(" / "); footer.AddNumPagesField();
-            section.AddParagraph(title, StyleNames.Heading1); return section;
+            if (title != null) section.AddParagraph(title, StyleNames.Heading1);
+            return section;
         }
         void Text(Section section, string text) => section.AddParagraph(Clean(text));
         void Table(Section section, string[] headers, IEnumerable<string[]> rows)
@@ -55,10 +59,32 @@ public static class PdfReport
             if (count == 0) { var row = table.AddRow(); row.Cells[0].MergeRight = headers.Length - 1; row.Cells[0].AddParagraph("Não medido / sem registros nesta coleta."); }
             section.AddParagraph();
         }
-        var cover = NewSection("Diagnóstico completo\nda conexão e do computador");
+        var cover = NewSection(null);
+        var masthead = cover.AddTable();
+        masthead.AddColumn(Unit.FromCentimeter(9.6)); masthead.AddColumn(Unit.FromCentimeter(8));
+        masthead.LeftPadding = masthead.RightPadding = 0;
+        masthead.TopPadding = 0; masthead.BottomPadding = 12;
+        masthead.Borders.Bottom.Color = Blue; masthead.Borders.Bottom.Width = 1;
+        var brandRow = masthead.AddRow(); brandRow.VerticalAlignment = VerticalAlignment.Center;
         using (var stream = typeof(Theme).Assembly.GetManifestResourceStream("NetInspector.Desktop.Assets.logo-connect10.png")!)
-        using (var buffer = new MemoryStream()) { stream.CopyTo(buffer); var logo = cover.AddImage("base64:" + Convert.ToBase64String(buffer.ToArray())); logo.Width = Unit.FromCentimeter(5); }
-        cover.AddParagraph("EVIDÊNCIAS  /  DESEMPENHO  /  CONFIGURAÇÕES", StyleNames.Heading2);
+        using (var buffer = new MemoryStream())
+        {
+            stream.CopyTo(buffer);
+            var logo = brandRow.Cells[0].AddParagraph().AddImage("base64:" + Convert.ToBase64String(buffer.ToArray()));
+            logo.Width = Unit.FromCentimeter(4.2); logo.LockAspectRatio = true;
+        }
+        var product = brandRow.Cells[1].AddParagraph("NET INSPECTOR");
+        product.Format.Alignment = ParagraphAlignment.Right; product.Format.Font.Size = 12;
+        product.Format.Font.Bold = true; product.Format.Font.Color = Ink; product.Format.SpaceAfter = 3;
+        var reportLabel = brandRow.Cells[1].AddParagraph("RELATÓRIO DE DIAGNÓSTICO");
+        reportLabel.Format.Alignment = ParagraphAlignment.Right; reportLabel.Format.Font.Size = 8;
+        reportLabel.Format.Font.Color = Gray; reportLabel.Format.SpaceAfter = 0;
+        var coverTitle = cover.AddParagraph("Diagnóstico completo");
+        coverTitle.Format.Font.Size = 22; coverTitle.Format.Font.Bold = true; coverTitle.Format.Font.Color = Ink;
+        coverTitle.Format.SpaceBefore = 16; coverTitle.Format.SpaceAfter = 4; coverTitle.Format.KeepWithNext = true;
+        var coverSubtitle = cover.AddParagraph("Conexão, desempenho e configurações do computador");
+        coverSubtitle.Format.Font.Size = 11; coverSubtitle.Format.Font.Color = Gray;
+        coverSubtitle.Format.SpaceAfter = 16; coverSubtitle.Format.KeepWithNext = true;
         Table(cover, ["Sessão", "Informação"], new[] {
             new[] { "Início", When(s.StartedAt) }, new[] { "Fim", s.EndedAt is { } end ? When(end) : "Checkpoint parcial" },
             new[] { "Duração solicitada / estado", $"{s.RequestedMinutes} minutos / {s.State}" }, new[] { "Versão / identificação", $"{s.AppVersion} / {s.Id}" },
