@@ -1,9 +1,9 @@
-# Net Inspector 1.5.2
+# Net Inspector 1.5.3
 
-- Cabeçalho da capa do PDF reorganizado: marca alinhada à esquerda, identificação do relatório à direita e linha divisória.
-- Título compacto em uma linha, com subtítulo separado e espaçamento consistente antes dos dados da sessão.
-- Removida a identificação repetida da marca acima do cabeçalho da capa. As páginas internas preservam seus cabeçalhos e rodapés.
+- Novo ícone exclusivo do Net Inspector, com lupa de diagnóstico e nós de rede em azul e laranja CONNECT10.
+- Ícone incorporado ao executável, janela principal e ferramentas do aplicativo.
+- Recurso Windows com dez resoluções, de 16 a 256 pixels, e transparência para ícones pequenos, barra de tarefas e Explorer.
 
 Distribuição portátil Windows x64, com .NET embutido. Baixe **NetInspector-win-x64.exe**, feche a versão anterior e execute o novo arquivo. O SHA-256 está em **SHA256SUMS.txt**. O executável ainda não possui assinatura digital.
 
-Validação: PDFs com dados e relatório vazio/legado gerados, capa e páginas internas renderizadas e revisadas, além dos testes existentes de interface.
+Validação: build Release, revisão visual em vários tamanhos, ícone extraído do executável publicado e testes existentes de interface.

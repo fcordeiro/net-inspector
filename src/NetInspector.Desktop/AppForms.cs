@@ -57,7 +57,7 @@ public sealed class InspectorForm : Form
         helpMenu.DropDownItems.Add(autoUpdate);
         helpMenu.DropDownItems.Add("Licenças de terceiros", null, (_, _) =>
         {
-            using var dialog = new Form { Text = "Licenças de terceiros", Size = new Size(800, 650), StartPosition = FormStartPosition.CenterParent, BackColor = Theme.Background, ForeColor = Theme.Text };
+            using var dialog = new Form { Text = "Licenças de terceiros", Icon = Theme.ApplicationIcon, Size = new Size(800, 650), StartPosition = FormStartPosition.CenterParent, BackColor = Theme.Background, ForeColor = Theme.Text };
             using var stream = typeof(Theme).Assembly.GetManifestResourceStream("NetInspector.ThirdPartyNotices")!;
             using var reader = new StreamReader(stream);
             dialog.Controls.Add(new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Text = reader.ReadToEnd(), Font = new Font("Consolas", 9), BackColor = Theme.Surface, ForeColor = Theme.Text });
@@ -178,7 +178,7 @@ internal sealed class GameTargetsDialog : Form
     public List<GameTarget> Targets { get; private set; } = [];
     public GameTargetsDialog(IEnumerable<GameTarget> targets)
     {
-        BackColor = Theme.Background; ForeColor = Theme.Text; Text = "Servidores de jogos — destinos específicos"; Size = new Size(900, 470); MinimumSize = new Size(800, 400); StartPosition = FormStartPosition.CenterParent; Font = new Font("Segoe UI", 10);
+        BackColor = Theme.Background; ForeColor = Theme.Text; Icon = Theme.ApplicationIcon; Text = "Servidores de jogos — destinos específicos"; Size = new Size(900, 470); MinimumSize = new Size(800, 400); StartPosition = FormStartPosition.CenterParent; Font = new Font("Segoe UI", 10);
         grid.Columns.Add("Name", "Nome / jogo"); grid.Columns.Add("Host", "Host ou IP"); grid.Columns.Add("Port", "Porta");
         grid.Columns.Add(new DataGridViewComboBoxColumn { Name = "Protocol", HeaderText = "Protocolo", DataSource = new[] { "Minecraft", "A2S", "TCP" } });
         foreach (var target in targets) grid.Rows.Add(target.Name, target.Host, target.Port, target.Protocol);

@@ -15,6 +15,14 @@ public static class Theme
     public static readonly Color Good = Color.FromArgb(97, 215, 178);
     public static readonly Color Bad = Color.FromArgb(255, 147, 151);
     public static readonly Color Navy = Text;
+    public static Icon ApplicationIcon { get; } = LoadApplicationIcon();
+    private static Icon LoadApplicationIcon()
+    {
+        using var stream = typeof(Theme).Assembly.GetManifestResourceStream("NetInspector.Desktop.Assets.net-inspector.ico")
+            ?? throw new InvalidOperationException("Ícone do aplicativo não encontrado.");
+        using var source = new Icon(stream);
+        return (Icon)source.Clone();
+    }
     public static void Initialize()
     {
 #pragma warning disable WFO5001
@@ -23,7 +31,7 @@ public static class Theme
     }
     public static void Apply(Form form, string title)
     {
-        form.Text = title; form.Font = new Font("Segoe UI", 10); form.BackColor = Background; form.ForeColor = Text;
+        form.Text = title; form.Icon = ApplicationIcon; form.Font = new Font("Segoe UI", 10); form.BackColor = Background; form.ForeColor = Text;
         form.Size = new Size(1440, 980); form.MinimumSize = new Size(1120, 820); form.StartPosition = FormStartPosition.CenterScreen;
     }
     public static Bitmap Asset(string name)

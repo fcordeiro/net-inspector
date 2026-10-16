@@ -1,11 +1,12 @@
-# Net Inspector 1.5.2
+# Net Inspector 1.5.3
 
 Copyright © 2026 Fernando J. Cordeiro @ CONNECT10 INTERNET
 
-Um único aplicativo nativo para Windows 10/11 x64: monitora a conexão por até duas horas e abre os próprios relatórios para análise offline. O EXE 1.5.2 está em `artifacts/win-x64-1.5.2/NetInspector.exe` e nas [releases oficiais](https://github.com/fcordeiro/net-inspector/releases). Versões anteriores locais foram preservadas. Feche a janela anterior e abra o novo EXE.
+Um único aplicativo nativo para Windows 10/11 x64: monitora a conexão por até duas horas e abre os próprios relatórios para análise offline. O EXE 1.5.3 está em `artifacts/win-x64-1.5.3/NetInspector.exe` e nas [releases oficiais](https://github.com/fcordeiro/net-inspector/releases). Versões anteriores locais foram preservadas. Feche a janela anterior e abra o novo EXE.
 
 ## Novidades da versão 1.5
 
+- **Ícone:** identidade própria com lupa e nós de rede em azul e laranja CONNECT10, aplicada ao EXE e às janelas. PNG original, ICO com dez resoluções e prompt de criação estão em `src/NetInspector.Desktop/Assets/`.
 - **Duração:** padrão de 15 minutos, mínimo de 1 e máximo de 120. Quinze minutos são um ponto inicial prático; duas horas permitem observar falhas intermitentes. O máximo é de monitoramento, com testes de velocidade periódicos. O orçamento de dados continua limitando as transferências. Mantenha o computador ligado e sem suspensão.
 - **Interface:** cabeçalhos tecnológicos, painéis azul profundo, hierarquia de títulos, seletores temáticos, ações uniformes e alinhamento vertical da linha Duração. Limpeza oferece rolagem das opções em janelas menores.
 - **Discos:** identificação automática por consultas somente de leitura ao dispositivo. SSD, HDD e mídia não identificada são apresentados com a evidência. Sobrescrita fica bloqueada em SSD, RAID, Storage Spaces, mídias virtuais, volumes compostos ou identificação inconclusiva. O processo elevado verifica novamente a mídia antes da operação; permanece a confirmação da ação destrutiva, sem pedir ao usuário para identificar SSD/HDD.
@@ -117,7 +118,7 @@ dotnet run --project tests/NetInspector.Tests -c Release -- --status-smoke
 dotnet run --project tests/NetInspector.Tests -c Release -- --smoke --speed-smoke
 dotnet run --project tests/NetInspector.UITests -c Release -- test-results/smoke.netinspect
 dotnet run --project tests/NetInspector.UITests -c Release -- --long-session
-./scripts/publish.ps1 -OutputDirectory artifacts/win-x64-1.5.2
+./scripts/publish.ps1 -OutputDirectory artifacts/win-x64-1.5.3
 ```
 
 Os testes incluem orçamento concorrente, transferências com aquecimento em transporte controlado, status com incidentes, Minecraft e A2S completos em servidores locais, formato de relatório e diagnóstico. `--status-smoke` consulta as três fontes reais. `--smoke` monitora o Windows real por 35s; `--speed-smoke` limita o tráfego externo a 12 MB e pode corretamente produzir velocidade inconclusiva por falta de duração. `UITests` renderiza as abas e verifica botões, logo, relatório e ausência de JSON na interface. Evidências ficam em `test-results` e não devem ser publicadas, pois podem conter dados reais.

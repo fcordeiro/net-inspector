@@ -98,6 +98,13 @@ Ainda requer homologação de troca física Wi-Fi/cabo durante a coleta, DPI var
 - Diagnóstico TXT usa a mesma lista de achados que contém o resumo de recursos. Relatórios antigos continuam legíveis com CPU/memória não medidas.
 - Monitoramento é total do computador, por amostras a cada 2s. A média é aritmética e o pico é o máximo observado; picos entre intervalos podem escapar. O ETA cobre a coleta; a etapa de eventos Windows e gravação informa duração indeterminada.
 - Não foi repetida uma sessão de duas horas nem homologado Windows limpo ou ARM64.
+# 1.5.3 - ícone do aplicativo (16/10/2026)
+
+- Ícone criado com geração de imagens integrada: lupa e três nós de rede, azul/laranja CONNECT10 e fundo azul-marinho. PNG original e prompt preservados em Assets.
+- ICO com transparência e resoluções de 16, 20, 24, 32, 40, 48, 64, 96, 128 e 256 pixels. Tamanhos pequenos revisados visualmente.
+- ApplicationIcon no projeto do EXE e recurso incorporado para as janelas, incluindo ferramentas, servidores de jogos e licenças.
+- Build Release, testes existentes de interface e extração do ícone do EXE publicados usados para validação.
+
 # 1.5.2 - organização do cabeçalho do PDF (16/10/2026)
 
 - Capa reorganizada com logo proporcional à esquerda, identificação à direita, linha divisória, título em uma linha e subtítulo separado.
