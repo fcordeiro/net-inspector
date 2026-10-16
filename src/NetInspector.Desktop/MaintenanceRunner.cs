@@ -14,7 +14,8 @@ internal static class MaintenanceRunner
         Directory.CreateDirectory(folder);
         var log = Path.Combine(folder, "output.log");
         var stop = Path.Combine(folder, "cancel");
-        var wrapper = "$ErrorActionPreference='Stop'; $cancelFile=" + Quote(stop) + "; $result=0; & { try { " + script +
+        // WinGet writes UTF-8 when piped. Windows PowerShell otherwise decodes those bytes using the console OEM page.
+        var wrapper = "$ErrorActionPreference='Stop'; [Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false); $OutputEncoding=[Console]::OutputEncoding; $cancelFile=" + Quote(stop) + "; $result=0; & { try { " + script +
             "\n } catch { Write-Output ('Falha: ' + $_); $script:result=1 } } *>&1 | ForEach-Object { $_.ToString() | Out-File -LiteralPath " + Quote(log) + " -Encoding utf8 -Append }; exit $result";
         var start = new ProcessStartInfo("powershell.exe") { UseShellExecute = elevated, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden };
         if (elevated) start.Verb = "runas";

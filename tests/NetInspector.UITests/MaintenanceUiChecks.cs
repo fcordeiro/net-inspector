@@ -16,6 +16,23 @@ internal static class MaintenanceUiChecks
         var lines = new List<string>();
         var code = Wait(RunScript("Write-Output 'saída com acentuação'; Write-Output 'fim'", lines.Add, CancellationToken.None));
         if (code != 0 || !string.Join("\n", lines).Contains("saída com acentuação")) throw new Exception("Runner perdeu saída UTF-8");
+        const string accented = "Concluído | Versão | Disponível | 2 atualizações disponíveis.";
+        var emitter = "$bytes=[Text.Encoding]::UTF8.GetBytes('" + accented + "'); $stream=[Console]::OpenStandardOutput(); $stream.Write($bytes,0,$bytes.Length)";
+        var encoded = Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(emitter));
+        lines.Clear();
+        code = Wait(RunScript("& powershell.exe -NoProfile -NonInteractive -EncodedCommand " + encoded, lines.Add, CancellationToken.None));
+        if (code != 0 || !string.Join("\n", lines).Contains(accented)) throw new Exception("Saída nativa UTF-8 perdeu acentos na passagem pelo PowerShell");
+        lines.Clear();
+        code = Wait(RunScript(native + "\nInvoke-Native 'powershell.exe' '-NoProfile -NonInteractive -EncodedCommand " + encoded + "'", lines.Add, CancellationToken.None));
+        if (code != 0 || !string.Join("\n", lines).Contains(accented)) throw new Exception("Runner nativo perdeu acentos UTF-8");
+        if (Environment.GetEnvironmentVariable("NETINSPECTOR_WINGET_SMOKE") == "1")
+        {
+            lines.Clear();
+            code = Wait(RunScript("& winget.exe upgrade --disable-interactivity; if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { throw ('Falha na consulta: ' + $LASTEXITCODE) }", lines.Add, CancellationToken.None));
+            var output = string.Join("\n", lines); File.WriteAllText("test-results/winget-encoding.txt", output);
+            if (code != 0 || output.Contains('├') || output.Contains('\uFFFD')) throw new Exception("Consulta real WinGet inválida ou com acentuação corrompida");
+            Console.WriteLine("OK: consulta real WinGet sem instalação e sem corrupção de acentos");
+        }
         code = Wait(RunScript("throw 'falha controlada'", lines.Add, CancellationToken.None));
         if (code != 1 || !string.Join("\n", lines).Contains("falha controlada")) throw new Exception("Runner perdeu falha");
         code = Wait(RunScript(native + "\nInvoke-Native 'cmd.exe' '/c echo native-ok'", lines.Add, CancellationToken.None));

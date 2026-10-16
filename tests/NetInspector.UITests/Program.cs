@@ -14,6 +14,7 @@ internal static class Program
         ReleaseUiChecks.Run();
         VerifyTools();
         MaintenanceUiChecks.Run();
+        UpdateUiChecks.Run();
         Verify(new InspectorForm(), "inspector", false);
         if (args.Length > 0) Verify(new InspectorForm(Path.GetFullPath(args[0])), "report", true);
     }

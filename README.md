@@ -1,8 +1,8 @@
-# Net Inspector 1.5.0
+# Net Inspector 1.5.1
 
 Copyright © 2026 Fernando J. Cordeiro @ CONNECT10 INTERNET
 
-Um único aplicativo nativo para Windows 10/11 x64: monitora a conexão por até duas horas e abre os próprios relatórios para análise offline. O EXE 1.5.0 está em `artifacts/win-x64-1.5.0/NetInspector.exe` e nas [releases oficiais](https://github.com/fcordeiro/net-inspector/releases). Versões anteriores locais foram preservadas. Feche a janela anterior e abra o novo EXE.
+Um único aplicativo nativo para Windows 10/11 x64: monitora a conexão por até duas horas e abre os próprios relatórios para análise offline. O EXE 1.5.1 está em `artifacts/win-x64-1.5.1/NetInspector.exe` e nas [releases oficiais](https://github.com/fcordeiro/net-inspector/releases). Versões anteriores locais foram preservadas. Feche a janela anterior e abra o novo EXE.
 
 ## Novidades da versão 1.5
 
@@ -11,7 +11,7 @@ Um único aplicativo nativo para Windows 10/11 x64: monitora a conexão por até
 - **Discos:** identificação automática por consultas somente de leitura ao dispositivo. SSD, HDD e mídia não identificada são apresentados com a evidência. Sobrescrita fica bloqueada em SSD, RAID, Storage Spaces, mídias virtuais, volumes compostos ou identificação inconclusiva. O processo elevado verifica novamente a mídia antes da operação; permanece a confirmação da ação destrutiva, sem pedir ao usuário para identificar SSD/HDD.
 - **PDF:** Arquivo > Salvar relatório completo em PDF (Ctrl+Shift+S), após finalizar ou abrir uma coleta. Capa com marca, diagnóstico, gráficos de CPU/memória/velocidade/latência, inventário, configurações, extensões, eventos Windows e tabelas de todas as medições. Inclui anexos internos com os dados originais. Coletas extensas podem produzir centenas de páginas por preservar todas as amostras. Campos ausentes aparecem como não medidos; o PDF não coleta retroativamente dados de relatórios antigos.
 - **Hardware:** novas coletas incluem modelo de processador, núcleos, memória física, fabricante/modelo do PC, versão/build do Windows e armazenamento, quando o Windows permite a consulta.
-- **Atualizações:** Ajuda > Verificar atualizações consulta a última release estável e valida a existência do EXE da arquitetura correspondente. A busca ao iniciar vem habilitada e pode ser desativada no menu Ajuda; a preferência é salva em LocalAppData/NetInspector. Somente a consulta é automática: o usuário abre as notas e baixa o EXE no navegador, fecha o aplicativo e substitui o arquivo. Nenhum executável é baixado ou instalado em segundo plano. Falhas de consulta são explicadas na verificação manual.
+- **Atualizações:** Ajuda > Verificar atualizações consulta a última release estável e valida a existência do EXE da arquitetura correspondente. A busca ao iniciar vem habilitada e pode ser desativada no menu Ajuda; a preferência é salva em LocalAppData/NetInspector. Somente a consulta é automática: o usuário abre as notas e baixa o EXE no navegador, fecha o aplicativo e substitui o arquivo. Nenhum executável é baixado ou instalado em segundo plano. A tela informa se há uma versão nova ou se o aplicativo está atualizado; falhas de consulta recebem uma mensagem curta.
 
 O teste sintético equivalente a 120 minutos gerou 14.400 pings, 3.600 leituras de recursos, 720 leituras de rede e 1.080 sondagens de serviços: checkpoint de cerca de 4,5 MB e PDF integral de cerca de 8,8 MB em aproximadamente 10 segundos neste computador. A cópia do estado para a interface foi otimizada de aproximadamente 113 ms para 0,3 ms nesse cenário. Essa validação de volume e uma coleta real curta não substituem a homologação contínua de duas horas.
 
@@ -117,7 +117,7 @@ dotnet run --project tests/NetInspector.Tests -c Release -- --status-smoke
 dotnet run --project tests/NetInspector.Tests -c Release -- --smoke --speed-smoke
 dotnet run --project tests/NetInspector.UITests -c Release -- test-results/smoke.netinspect
 dotnet run --project tests/NetInspector.UITests -c Release -- --long-session
-./scripts/publish.ps1 -OutputDirectory artifacts/win-x64-1.5.0
+./scripts/publish.ps1 -OutputDirectory artifacts/win-x64-1.5.1
 ```
 
 Os testes incluem orçamento concorrente, transferências com aquecimento em transporte controlado, status com incidentes, Minecraft e A2S completos em servidores locais, formato de relatório e diagnóstico. `--status-smoke` consulta as três fontes reais. `--smoke` monitora o Windows real por 35s; `--speed-smoke` limita o tráfego externo a 12 MB e pode corretamente produzir velocidade inconclusiva por falta de duração. `UITests` renderiza as abas e verifica botões, logo, relatório e ausência de JSON na interface. Evidências ficam em `test-results` e não devem ser publicadas, pois podem conter dados reais.

@@ -98,6 +98,14 @@ Ainda requer homologação de troca física Wi-Fi/cabo durante a coleta, DPI var
 - Diagnóstico TXT usa a mesma lista de achados que contém o resumo de recursos. Relatórios antigos continuam legíveis com CPU/memória não medidas.
 - Monitoramento é total do computador, por amostras a cada 2s. A média é aritmética e o pico é o máximo observado; picos entre intervalos podem escapar. O ETA cobre a coleta; a etapa de eventos Windows e gravação informa duração indeterminada.
 - Não foi repetida uma sessão de duas horas nem homologado Windows limpo ou ARM64.
+# 1.5.1 - acentuação do WinGet e mensagens de atualização (16/10/2026)
+
+- Configurada a codificação UTF-8 na passagem de comandos nativos pelo PowerShell, antes da gravação do log. Não há substituição posterior de caracteres corrompidos.
+- Testes emitindo bytes UTF-8 reais, tanto por comando nativo direto quanto pelo runner de processos, preservaram Concluído, Versão, Disponível e atualizações.
+- Consulta real `winget upgrade --disable-interactivity` preservou Versão, Disponível e a mensagem de duas atualizações disponíveis. Não instalou nem atualizou programas.
+- Tela do atualizador validada nos estados de versão atual, versão nova e falha, sem explicações sobre releases, navegador ou troca do EXE. Download aparece somente no estado de versão nova. Capturas locais revisadas.
+- Testes de interface e runner passaram, incluindo cancelamento e ferramentas existentes.
+
 # 1.5.0 - duração, armazenamento, interface, PDF e atualizações (16/10/2026)
 
 - Padrão de coleta alterado para 15min; máximo mantido em 120min e compartilhado entre controle e coletor. A duração longa é de monitoramento com velocidade periódica, limitada pelo orçamento de dados.
