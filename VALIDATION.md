@@ -138,3 +138,9 @@ Ainda requer homologação de troca física Wi-Fi/cabo durante a coleta, DPI var
 - Tabelas visíveis evitam nova vinculação quando os valores não mudaram; atualizações preservam a seleção e o registro em leitura nas listas com novas amostras no topo. A lista no início continua mostrando as amostras mais recentes.
 - Teste `--live-refresh`: documentos longos com a janela ativa e inativa, seleção de texto, rolagem vertical/horizontal, conteúdo idêntico e dados novos; tabela de pings com inserção no topo. Verificação por estado dos controles nativos, sem avaliação visual contínua de uma coleta real.
 - Build Release sem avisos/erros; 87 verificações do núcleo e suíte de interface existente passaram. EXE local em `artifacts/win-x64-refresh-fix/NetInspector.exe`; sem criação de release no GitHub.
+
+## Release 1.5.4 (16/10/2026)
+
+- Versão do aplicativo e notas atualizadas para 1.5.4 com a correção de atualização das telas.
+- Build Release sem avisos/erros e teste `--live-refresh` passaram novamente na nova versão.
+- Executável portátil local gerado em `artifacts/win-x64-1.5.4/NetInspector.exe`; publicação oficial pela tag `v1.5.4` usa o workflow com testes de núcleo/interface e SHA-256.
